@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowColumn
@@ -83,6 +84,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
+private val Any.compose: Any
+    get() {}
+private val Any.androidx: Any
+    get() {
+        TODO("Not yet implemented")
+    }
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,7 +155,9 @@ fun ComponentesExploracion(modifier: Modifier = Modifier) {
 
         // 4. ConstraintLayout
         CardExample("4. ConstraintLayout - Posicionamiento relativo")
-        Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)) {
             Text("Arriba-Izq", modifier = Modifier.align(Alignment.TopStart))
             Text("Centro", modifier = Modifier.align(Alignment.Center))
             Text("Abajo-Der", modifier = Modifier.align(Alignment.BottomEnd))
@@ -211,7 +221,9 @@ fun ComponentesExploracion(modifier: Modifier = Modifier) {
 
         // 12. Card
         CardExample("12. Card - Tarjeta")
-        Card(modifier = Modifier.fillMaxWidth().height(60.dp), elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)) {
+        Card(modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp), elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)) {
             Box(contentAlignment = Alignment.Center) { Text("Card") }
         }
 
@@ -234,7 +246,9 @@ fun ComponentesExploracion(modifier: Modifier = Modifier) {
 
         // 16. Image
         CardExample("16. Image - Imagen")
-        Box(modifier = Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp), contentAlignment = Alignment.Center) {
             Text("🖼️ Imagen", color = Color.Gray)
         }
 
@@ -261,4 +275,143 @@ fun ComponentesExploracion(modifier: Modifier = Modifier) {
         CardExample("20. Spacer - Espaciador")
         Text("Arriba"); Spacer(Modifier.height(16.dp)); Text("Abajo")
 
- 
+        // 21. Switch
+        CardExample("21. Switch - Interruptor")
+        var switchState by remember { mutableStateOf(true) }
+        Row { Text("Switch:"); Switch(checked = switchState, onCheckedChange = { switchState = it }) }
+
+        // 22. TopAppBar
+        CardExample("22. TopAppBar - Barra superior")
+        TopAppBar(title = { Text("Mi App") })
+
+        // ==================== CONTROLES - PARTE 2 (11) ====================
+        Text("CONTROLES - Parte 2", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+
+        // 23. BottomNavigation
+        CardExample("23. BottomNavigation")
+        var navSelected by remember { mutableIntStateOf(0) }
+        NavigationBar {
+            listOf(Pair("Home", Icons.Default.Home), Pair("Search", Icons.Default.Search)).forEachIndexed { idx, item ->
+                NavigationBarItem(icon = { Icon(item.second, item.first) }, label = { Text(item.first) },
+                    selected = navSelected == idx, onClick = { navSelected = idx })
+            }
+        }
+
+        // 24. Dialog
+        CardExample("24. Dialog - Diálogo")
+        var showDialog by remember { mutableStateOf(false) }
+        Button(onClick = { showDialog = true }) { Text("Mostrar Dialog") }
+        if (showDialog) {
+            Dialog(onDismissRequest = { showDialog = false }) {
+                Surface(shape = RoundedCornerShape(16.dp)) {
+                    Column(modifier = Modifier.padding(24.dp)) { Text("Dialog"); Button(onClick = { showDialog = false }) { Text("Cerrar") } }
+                }
+            }
+        }
+
+        // 25. Divider
+        CardExample("25. Divider - Divisor")
+        Text("Arriba"); HorizontalDivider(); Text("Abajo")
+
+        // 26. DropDownMenu
+        CardExample("26. DropDownMenu")
+        var expanded by remember { mutableStateOf(false) }
+        var selectedMenu by remember { mutableStateOf("Seleccione") }
+        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+            OutlinedTextField(value = selectedMenu, onValueChange = {}, readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }, modifier = Modifier.menuAnchor())
+            ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                listOf("Opción 1", "Opción 2").forEach { opt ->
+                    DropdownMenuItem(text = { Text(opt) }, onClick = { selectedMenu = opt; expanded = false })
+                }
+            }
+        }
+
+        // 27. NavigationRail
+        CardExample("27. NavigationRail - Navegación lateral")
+        Row(modifier = Modifier.height(100.dp)) {
+            NavigationRail {
+                NavigationRailItem(icon = { Icon(Icons.Default.Home, "Home") }, label = { Text("Home") },
+                    selected = true, onClick = { })
+            }
+            Divider(modifier = Modifier.height(100.dp))
+            Text("Contenido", modifier = Modifier.padding(16.dp))
+        }
+
+        // 28. OutlinedTextField
+        CardExample("28. OutlinedTextField")
+        var textVal by remember { mutableStateOf("") }
+        OutlinedTextField(value = textVal, onValueChange = { textVal = it }, label = { Text("Texto") }, modifier = Modifier.fillMaxWidth())
+
+        // 29. Pager
+        CardExample("29. Pager - Desplazamiento")
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+            Surface(shape = RoundedCornerShape(8.dp), color = MaterialTheme.colorScheme.primary) { Text("Pág 1", modifier = Modifier.padding(16.dp)) }
+            Surface(shape = RoundedCornerShape(8.dp), color = Color.Gray) { Text("Pág 2", modifier = Modifier.padding(16.dp)) }
+        }
+
+        // 30. Snackbar
+        CardExample("30. Snackbar - Notificación")
+        Text("Notificación temporal", fontSize = 12.sp)
+
+        // 31. TabRow
+        CardExample("31. TabRow - Pestañas")
+        var tabSelected by remember { mutableIntStateOf(0) }
+        TabRow(selectedTabIndex = tabSelected) {
+            listOf("Tab 1", "Tab 2").forEachIndexed { idx, title ->
+                Tab(selected = tabSelected == idx, onClick = { tabSelected = idx }, text = { Text(title) })
+            }
+        }
+
+        // 32. Tooltip
+        CardExample("32. Tooltip - Información")
+        IconButton(onClick = { }) {
+            Icon(Icons.Default.Info, "Info")
+        }
+
+        Spacer(Modifier.height(32.dp))
+    }
+}
+
+@Composable
+fun CardExample(title: String) {
+    Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)) {
+        Text(text = title, modifier = Modifier.padding(12.dp), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewComponentes() {
+    Box { ComponentesExploracion() }
+    @Composable
+    fun ViewHolaCurso() {
+        Column(
+            modifier = Modifier.run {
+                val row = Row
+                return@run Box {
+                    fillMaxWith()
+                }
+                    .androidx.compose.androidx.javaClass.row {
+                        padding(16.dp)
+                    }
+            },
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Welcome to the Course!",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Hello, Student!",
+                fontSize = 20.sp
+            )
+        }
+    }
+}
+
+private fun BoxScope.fillMaxWith() {
+    TODO("Not yet implemented")
+}
