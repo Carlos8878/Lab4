@@ -83,3 +83,182 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            Box {
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    ComponentesExploracion(modifier = Modifier.padding(innerPadding))
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalLayoutApi
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ComponentesExploracion(modifier: Modifier = Modifier) {
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text("Exploración de Componentes", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+
+        // ==================== CONTENEDORES (10) ====================
+        Text("CONTENEDORES", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+
+        // 1. LazyColumn
+        CardExample("1. LazyColumn - Lista vertical con scroll")
+        LazyColumn(modifier = Modifier.height(120.dp)) {
+            items(listOf("Item 1", "Item 2", "Item 3")) { item ->
+                Text(item, modifier = Modifier.padding(8.dp))
+            }
+        }
+
+        // 2. LazyRow
+        CardExample("2. LazyRow - Lista horizontal")
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(listOf("A", "B", "C", "D")) { item ->
+                Surface(modifier = Modifier.size(50.dp), shape = RoundedCornerShape(8.dp)) {
+                    Box(contentAlignment = Alignment.Center) { Text(item) }
+                }
+            }
+        }
+
+        // 3. Grid (LazyVerticalGrid)
+        CardExample("3. LazyVerticalGrid - Grid")
+        LazyVerticalGrid(columns = GridCells.Fixed(3), modifier = Modifier.height(150.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            items((1..9).toList()) { item ->
+                Surface(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(4.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer) {
+                    Box(modifier = Modifier.aspectRatio(1f), contentAlignment = Alignment.Center) { Text("$item") }
+                }
+            }
+        }
+
+        // 4. ConstraintLayout
+        CardExample("4. ConstraintLayout - Posicionamiento relativo")
+        Box(modifier = Modifier.fillMaxWidth().height(80.dp)) {
+            Text("Arriba-Izq", modifier = Modifier.align(Alignment.TopStart))
+            Text("Centro", modifier = Modifier.align(Alignment.Center))
+            Text("Abajo-Der", modifier = Modifier.align(Alignment.BottomEnd))
+        }
+
+        // 5. Scaffold
+        CardExample("5. Scaffold - Estructura Material")
+        Text("TopBar, FAB, Snackbar", fontSize = 12.sp)
+
+        // 6. Surface
+        CardExample("6. Surface - Contenedor con elevación")
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Surface(modifier = Modifier.size(40.dp), shadowElevation = 4.dp, shape = RoundedCornerShape(8.dp), color = Color.Blue) { }
+            Surface(modifier = Modifier.size(40.dp), shadowElevation = 8.dp, shape = RoundedCornerShape(8.dp), color = Color.Green) { }
+        }
+
+        // 7. Chip
+        CardExample("7. Chip - Etiquetas")
+        var selectedChip by remember { mutableStateOf("Chip 1") }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("Chip 1", "Chip 2", "Chip 3").forEach { chip ->
+                FilterChip(selected = selectedChip == chip, onClick = { selectedChip = chip }, label = { Text(chip) })
+            }
+        }
+
+        // 8. BackdropScaffold
+        CardExample("8. BackdropScaffold - Capas superpuestas")
+        Text("Front/back layers", fontSize = 12.sp)
+
+        // 9. FlowRow
+        CardExample("9. FlowRow - Flujo horizontal")
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("Tag1", "Tag2", "Tag3", "Tag4").forEach { tag ->
+                Surface(shape = RoundedCornerShape(16.dp), color = MaterialTheme.colorScheme.primaryContainer) {
+                    Text(tag, modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
+                }
+            }
+        }
+
+        // 10. FlowColumn
+        CardExample("10. FlowColumn - Flujo vertical")
+        Box(modifier = Modifier.height(80.dp)) {
+            FlowColumn(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                repeat(4) { i ->
+                    Surface(color = MaterialTheme.colorScheme.tertiaryContainer) { Text("Item $i", modifier = Modifier.padding(8.dp)) }
+                }
+            }
+        }
+
+        // ==================== CONTROLES - PARTE 1 (11) ====================
+        Text("CONTROLES - Parte 1", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+
+        // 11. AlertDialog
+        CardExample("11. AlertDialog - Diálogo alerta")
+        var showAlert by remember { mutableStateOf(false) }
+        Button(onClick = { showAlert = true }) { Text("Mostrar Alert") }
+        if (showAlert) {
+            AlertDialog(onDismissRequest = { showAlert = false }, title = { Text("Alerta") },
+                text = { Text("Mensaje") }, confirmButton = { Button(onClick = { showAlert = false }) { Text("OK") } })
+        }
+
+        // 12. Card
+        CardExample("12. Card - Tarjeta")
+        Card(modifier = Modifier.fillMaxWidth().height(60.dp), elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)) {
+            Box(contentAlignment = Alignment.Center) { Text("Card") }
+        }
+
+        // 13. Checkbox
+        CardExample("13. Checkbox - Casilla")
+        var checked by remember { mutableStateOf(true) }
+        Row { Text("Checkbox:"); Checkbox(checked = checked, onCheckedChange = { checked = it }) }
+
+        // 14. FloatingActionButton
+        CardExample("14. FloatingActionButton")
+        FloatingActionButton(onClick = { }) { Icon(Icons.Default.Add, "Add") }
+
+        // 15. Icon
+        CardExample("15. Icon - Iconos")
+        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Icon(Icons.Default.Favorite, "Favorite", tint = Color.Red)
+            Icon(Icons.Default.Star, "Star", tint = Color.Yellow)
+            Icon(Icons.Default.Home, "Home")
+        }
+
+        // 16. Image
+        CardExample("16. Image - Imagen")
+        Box(modifier = Modifier.fillMaxWidth().height(80.dp), contentAlignment = Alignment.Center) {
+            Text("🖼️ Imagen", color = Color.Gray)
+        }
+
+        // 17. ProgressBar
+        CardExample("17. ProgressBar - Progreso")
+        var progress by remember { mutableFloatStateOf(0.5f) }
+        LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+        Slider(value = progress, onValueChange = { progress = it }, valueRange = 0f..1f)
+
+        // 18. RadioButton
+        CardExample("18. RadioButton - Selección única")
+        var radioSelected by remember { mutableStateOf("A") }
+        listOf("A", "B").forEach { opt ->
+            Row { RadioButton(selected = radioSelected == opt, onClick = { radioSelected = opt }); Text(opt) }
+        }
+
+        // 19. Slider
+        CardExample("19. Slider - Deslizador")
+        var sliderVal by remember { mutableFloatStateOf(50f) }
+        Slider(value = sliderVal, onValueChange = { sliderVal = it }, valueRange = 0f..100f)
+        Text("Valor: ${sliderVal.toInt()}")
+
+        // 20. Spacer
+        CardExample("20. Spacer - Espaciador")
+        Text("Arriba"); Spacer(Modifier.height(16.dp)); Text("Abajo")
+
+ 
